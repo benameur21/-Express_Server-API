@@ -2,6 +2,7 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
+
 app.get('/', (req, res) => {
   res.json({ message: 'Hello, I am the blog API' });
 });
@@ -15,10 +16,17 @@ const articles = [
   { id: 3, title: 'Testing an API with Postman', author: 'Aya' }
 ];
 
-// GET /api/articles -> fetch all articles
 app.get('/api/articles', (req, res) => {
-  res.json({ total: articles.length, articles });
+  const { author } = req.query;
+  let result = articles;
+
+  if (author) {
+    result = articles.filter((a) => a.author === author);
+  }
+
+  res.json({ total: result.length, articles: result });
 });
+
 
 
 // GET /api/articles/:id -> fetch article whose id equals 2
