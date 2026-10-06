@@ -79,6 +79,20 @@ app.post("/contact", (req, res) => {
 });
 
 
+//Q5
+app.get("/api/users", (req, res) => {
+  const { name } = req.query;
+
+  if (name) {
+    const filteredUsers = users.filter(
+      (user) => user.name.toLowerCase() === name.toLowerCase()
+    );
+
+    return res.json(filteredUsers);
+  }
+
+  res.json(users);
+});
 
 
 
