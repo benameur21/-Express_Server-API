@@ -48,8 +48,35 @@ app.get("/api/users", (req, res) => {
   res.json(users);
 });
 
+//Q3 
+app.get("/api/users/:id", (req, res) => {
+  const id = Number(req.params.id);
 
+  const user = users.find((user) => user.id === id);
 
+  if (!user) {
+    return res.status(404).json({
+      message: "User not found"
+    });
+  }
+
+  res.json(user);
+});
+
+//Q4 
+app.post("/contact", (req, res) => {
+  const { email, message } = req.body;
+
+  if (!email || !message) {
+    return res.status(400).json({
+      message: "Email and message are required"
+    });
+  }
+
+  res.status(200).json({
+    message: "Thank you, your message has been received"
+  });
+});
 
 
 
