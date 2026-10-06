@@ -21,7 +21,17 @@ app.get('/api/articles', (req, res) => {
 });
 
 
+// GET /api/articles/:id -> fetch article whose id equals 2
+app.get('/api/articles/:id', (req, res) => {
+  const id = Number(req.params.id);
+  const article = articles.find((a) => a.id === id);
 
+  if (!article) {
+    return res.status(404).json({ error: `Article ${id} not found` });
+  }
+
+  res.json(article);
+});
 
 
 
