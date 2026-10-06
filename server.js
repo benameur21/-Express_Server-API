@@ -2,7 +2,7 @@ const express = require('express');
 const app = express();
 const PORT = 3000;
 
-
+app.use( express.json () ) ; 
 app.get('/', (req, res) => {
   res.json({ message: 'Hello, I am the blog API' });
 });
@@ -42,6 +42,22 @@ app.get('/api/articles/:id', (req, res) => {
 });
 
 
+let nextId = 4;
+
+// POST /api/articles -> create an article from { "title": "...", "author": "..." }
+app.post('/api/articles', (req, res) => {
+  const { title, author } = req.body;
+
+  if (!title || !author) {
+    return res.status(400).json({ error: 'Title and author are required' });
+  }
+
+  const newArticle = { id: nextId, title, author };
+  nextId += 1;
+  articles.push(newArticle);
+
+  res.status(201).json({ message: 'Article created', article: newArticle });
+});
 
 
 
