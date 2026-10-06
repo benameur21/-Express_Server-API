@@ -3,6 +3,26 @@ const app = express();
 const PORT = 3000;
 
 app.use( express.json () ) ; 
+
+
+
+//exercice 1
+app.get("/about", (req, res) => {
+  res.json({
+    applicationName: "My Blog API",
+    studentName: "Islem Ben Ameur",
+  });
+});
+
+
+
+
+
+
+
+
+
+
 app.get('/', (req, res) => {
   res.json({ message: 'Hello, I am the blog API' });
 });
@@ -58,6 +78,20 @@ app.post('/api/articles', (req, res) => {
 
   res.status(201).json({ message: 'Article created', article: newArticle });
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
