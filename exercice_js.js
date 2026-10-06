@@ -4,6 +4,10 @@ const products = [
   { name: 'Mouse', price: 25 }
 ];
 
-// 1. Destructuring
+// Destructuring
 const { name, price } = products[0];
 console.log(name, price);
+
+// Find()
+const mouse = products.find(product => product.name === "Mouse");
+console.log(mouse.price);
