@@ -18,3 +18,5 @@ console.log(cheapProducts);
 
 // Arrow function with 10% discount
 const withDiscount = (price) => price * 0.9;
+
+console.log(withDiscount(320));
