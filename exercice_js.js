@@ -15,3 +15,6 @@ console.log(mouse.price);
 // Filter
 const cheapProducts = products.filter(product => product.price < 100);
 console.log(cheapProducts);
+
+// Arrow function with 10% discount
+const withDiscount = (price) => price * 0.9;
