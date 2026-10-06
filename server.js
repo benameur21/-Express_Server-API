@@ -7,6 +7,7 @@ app.use( express.json () ) ;
 
 
 //exercice 1
+//Q1
 app.get("/about", (req, res) => {
   res.json({
     applicationName: "My Blog API",
@@ -14,7 +15,38 @@ app.get("/about", (req, res) => {
   });
 });
 
+//Q2
+const users = [
+  {
+    id: 1,
+    name: "Aya",
+    email: "aya@example.com"
+  },
+  {
+    id: 2,
+    name: "Ahmed",
+    email: "ahmed@example.com"
+  },
+  {
+    id: 3,
+    name: "Sara",
+    email: "sara@example.com"
+  }
+];
 
+app.get("/api/users", (req, res) => {
+  const { name } = req.query;
+
+  if (name) {
+    const filteredUsers = users.filter(
+      (user) => user.name.toLowerCase() === name.toLowerCase()
+    );
+
+    return res.json(filteredUsers);
+  }
+
+  res.json(users);
+});
 
 
 
