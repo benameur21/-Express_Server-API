@@ -1,3 +1,5 @@
+const { estNonVide, estEmailValide } = require('../utils/validators');
+
 // Data stored in the controller (in memory for this session)
 let users = [
     {
@@ -8,7 +10,7 @@ let users = [
     },
     {
         id: 2,
-        name: ' test one',
+        name: 'test one',
         email: 'test@example.com',
         role: 'user'
     }
@@ -46,19 +48,29 @@ const getUserById = (req, res) => {
 };
 
 // 3. Create a new user
+
 const createUser = (req, res) => {
     const { name, email, role } = req.body;
 
-    if (!name || !email) {
+    // Validate the user's name
+    if (!estNonVide(name)) {
         return res.status(400).json({
-            error: 'Name and email are required'
+            error: 'Name is required and cannot be empty'
         });
     }
 
+    // Validate the user's email
+    if (!estEmailValide(email)) {
+        return res.status(400).json({
+            error: 'Invalid email address. The email must contain @ and .'
+        });
+    }
+
+    // Create the new user
     const newUser = {
         id: nextId++,
-        name,
-        email,
+        name: name.trim(),
+        email: email.trim(),
         role: role || 'user'
     };
 
@@ -69,6 +81,7 @@ const createUser = (req, res) => {
         user: newUser
     });
 };
+
 
 // 4. Delete a user by their unique ID
 const deleteUser = (req, res) => {
@@ -95,6 +108,5 @@ module.exports = {
     getAllUsers,
     getUserById,
     createUser,
-    updateUser,
     deleteUser
 };
