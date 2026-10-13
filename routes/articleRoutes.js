@@ -2,13 +2,13 @@ const express = require('express');
 const router = express.Router();
 const articleController = require('../controllers/articleController');
 
-router.put('/:id', articleController.updateArticle);
-
 // Important note: The '/api/articles' prefix will be defined in server.js.
 // Here, '/' represents the root of the resource: '/api/articles'!
 
 router.get('/', articleController.getAllArticles);
 router.get('/:id', articleController.getArticleById);
 router.post('/', articleController.createArticle);
+router.put('/:id', articleController.updateArticle);
+router.delete('/:id', articleController.deleteArticle);
 
 module.exports = router;

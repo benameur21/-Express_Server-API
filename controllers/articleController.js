@@ -83,11 +83,30 @@ const updateArticle = (req, res) => {
         article: articles[index]
     });
 };
+// 5. Delete an article (DELETE /api/articles/:id)
+const deleteArticle = (req, res) => {
+    const id = Number(req.params.id);
 
+    const articleExists = articles.some(a => a.id === id);
+
+    if (!articleExists) {
+        return res.status(404).json({
+            error: `Cannot delete: Article ${id} not found`
+        });
+    }
+
+    // Filter the array to keep only articles with a different ID
+    articles = articles.filter(a => a.id !== id);
+
+    res.status(200).json({
+        message: `Article ${id} deleted successfully`
+    });
+};
 // CommonJS export: make these functions available to other modules
 module.exports = {
     getAllArticles,
     getArticleById,
     createArticle,
-    updateArticle
+    updateArticle,
+    deleteArticle
 };
