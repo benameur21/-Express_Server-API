@@ -60,9 +60,34 @@ const createArticle = (req, res) => {
     });
 };
 
+// 4. Update an existing article (PUT /api/articles/:id)
+const updateArticle = (req, res) => {
+    const id = Number(req.params.id);
+    const { title, author } = req.body;
+
+    // Find the article's index in the array
+    const index = articles.findIndex(a => a.id === id);
+
+    if (index === -1) {
+        return res.status(404).json({
+            error: `Article ${id} not found`
+        });
+    }
+
+    // Update the article partially or completely
+    if (title) articles[index].title = title;
+    if (author) articles[index].author = author;
+
+    res.status(200).json({
+        message: 'Article updated successfully',
+        article: articles[index]
+    });
+};
+
 // CommonJS export: make these functions available to other modules
 module.exports = {
     getAllArticles,
     getArticleById,
-    createArticle
+    createArticle,
+    updateArticle
 };
