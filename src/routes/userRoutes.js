@@ -13,5 +13,7 @@ router.get('/:id', userController.getUserById);
 // POST /api/users - Create a new user
 router.post('/', userController.createUser);
 
+// DELETE /api/users/:id - Delete a user by ID
+router.delete('/:id', userController.deleteUser);
 
 module.exports = router;
