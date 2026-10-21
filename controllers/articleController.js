@@ -1,3 +1,4 @@
+
 // Data stored in the controller 
 let articles = [
     { id: 1, title: 'Welcome to the blog', author: 'Admin' },

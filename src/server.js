@@ -6,8 +6,8 @@ dns.setServers(['8.8.8.8', '1.1.1.1']);
 const express = require('express');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const articleRoutes = require('../routes/articleRoutes');
-const userRoutes = require('../routes/userRoutes');
+const articleRoutes = require('./routes/articleRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 dotenv.config();
 
