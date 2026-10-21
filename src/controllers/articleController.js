@@ -42,21 +42,30 @@ const createArticle = async (req, res) => {
 };
 
 // 3. Retrieve a single article by ID
+
 const getArticleById = async (req, res) => {
   try {
     const article = await Article.findById(req.params.id).populate(
       'author',
       'name email'
     );
+
     if (!article) {
       return res.status(404).json({ message: 'Article not found' });
     }
 
     return res.status(200).json(article);
   } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({
+        message: 'Identifiant de ressource invalide (format ObjectId attendu)'
+      });
+    }
+
     return res.status(500).json({ message: err.message });
   }
 };
+
 
 // 4. Update an existing article (PUT /api/articles/:id)
 const updateArticle = async (req, res) => {

@@ -34,18 +34,27 @@ const getUsers = async (req, res) => {
 };
 
 // 3. Retrieve a user by ID (GET /api/users/:id)
+
 const getUserById = async (req, res) => {
   try {
     const user = await User.findById(req.params.id);
+
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
 
     return res.status(200).json(user);
   } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({
+        message: 'Identifiant de ressource invalide (format ObjectId attendu)'
+      });
+    }
+
     return res.status(500).json({ message: err.message });
   }
 };
+
 
 
 // 4.delete a user by ID (DELETE /api/users/:id)
