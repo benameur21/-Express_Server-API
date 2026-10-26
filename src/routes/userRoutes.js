@@ -6,7 +6,8 @@ const {
   loginUser,
   getUserProfile,
   getAllUsers,
-  updatePassword    
+  updatePassword, 
+  updateUserRole
 } = require('../controllers/userController');
 
 const { protect, adminOnly } = require('../middlewares/authMiddleware');
@@ -22,5 +23,8 @@ router.get('/profile', protect, getUserProfile);
 router.get('/', protect, adminOnly, getAllUsers);
 
 router.put('/update-password', protect, updatePassword);
+
+router.put('/:id/role', protect, adminOnly, updateUserRole);
+
 
 module.exports = router;

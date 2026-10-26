@@ -12,7 +12,7 @@ const generateToken = (id, role) => {
 // POST /api/users/register (Inscription)
 const registerUser = async (req, res) => {
   try {
-    const { name, email, password, age, role } = req.body;
+    const { name, email, password, age } = req.body;
 
     if (!name || !email || !password) {
       return res.status(400).json({ message: 'Nom, email et mot de passe requis' });
@@ -32,7 +32,7 @@ const registerUser = async (req, res) => {
       email,
       password: hashedPassword,
       age,
-      role
+      role:'user'
     });
 
     return res.status(201).json({
@@ -157,5 +157,50 @@ const updatePassword = async (req, res) => {
 };
 
 
+// PUT /api/users/:id/role
+const updateUserRole = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { role } = req.body;
 
-module.exports = { registerUser, loginUser, getUserProfile, getAllUsers ,  updatePassword };
+    if (!['user', 'admin'].includes(role)) {
+      return res.status(400).json({
+        message: 'Invalid role. Use user or admin'
+      });
+    }
+
+    const user = await User.findById(id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'User not found'
+      });
+    }
+
+    user.role = role;
+    await user.save();
+
+    return res.status(200).json({
+      message: 'User role updated successfully',
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role
+      }
+    });
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({
+        message: 'Invalid user ID'
+      });
+    }
+
+    return res.status(500).json({
+      message: 'Server error'
+    });
+  }
+};
+
+
+module.exports = { registerUser, loginUser, getUserProfile, getAllUsers ,  updatePassword, updateUserRole};

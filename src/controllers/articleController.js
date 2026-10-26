@@ -137,9 +137,27 @@ const deleteArticle = async (req, res) => {
   }
 };
 
+
+// GET /api/articles/my-articles
+const getMyArticles = async (req, res) => {
+  try {
+    const articles = await Article.find({
+      author: req.user._id
+    }).populate('author', 'name email role');
+
+    return res.status(200).json(articles);
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Erreur serveur'
+    });
+  }
+};
+
+
 module.exports = {
   getAllArticles,
   getArticleById,
+  getMyArticles,
   createArticle,
   updateArticle,
   deleteArticle

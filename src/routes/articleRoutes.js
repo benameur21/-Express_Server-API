@@ -4,6 +4,7 @@ const router = express.Router();
 const {
   getAllArticles,
   getArticleById,
+  getMyArticles,
   createArticle,
   updateArticle,
   deleteArticle
@@ -13,7 +14,9 @@ const { protect } = require('../middlewares/authMiddleware');
 
 // Consultation publique
 router.get('/', getAllArticles);
+router.get('/my-articles', protect, getMyArticles);
 router.get('/:id', getArticleById);
+
 
 // Opérations d'écriture protégées par authentification JWT
 router.post('/', protect, createArticle);
