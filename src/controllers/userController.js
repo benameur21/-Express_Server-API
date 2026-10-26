@@ -102,4 +102,60 @@ const getAllUsers = async (req, res) => {
   }
 };
 
-module.exports = { registerUser, loginUser, getUserProfile, getAllUsers };
+// PUT /api/users/update-password
+const updatePassword = async (req, res) => {
+  try {
+    const { oldPassword, newPassword } = req.body;
+
+    if (!oldPassword || !newPassword) {
+      return res.status(400).json({
+        message: 'Les deux mots de passe sont obligatoires'
+      });
+    }
+
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        message: 'Le nouveau mot de passe doit contenir au moins 6 caractères'
+      });
+    }
+
+    // Récupérer l'utilisateur connecté
+    const user = await User.findById(req.user._id);
+
+    if (!user) {
+      return res.status(404).json({
+        message: 'Utilisateur introuvable'
+      });
+    }
+
+    // Vérifier l'ancien mot de passe
+    const isMatch = await bcrypt.compare(
+      oldPassword,
+      user.password
+    );
+
+    if (!isMatch) {
+      return res.status(401).json({
+        message: 'Ancien mot de passe incorrect'
+      });
+    }
+
+    // Générer un sel et hacher le nouveau mot de passe
+    const salt = await bcrypt.genSalt(10);
+    user.password = await bcrypt.hash(newPassword, salt);
+
+    await user.save();
+
+    return res.status(200).json({
+      message: 'Mot de passe modifié avec succès'
+    });
+  } catch (err) {
+    return res.status(500).json({
+      message: 'Erreur serveur'
+    });
+  }
+};
+
+
+
+module.exports = { registerUser, loginUser, getUserProfile, getAllUsers ,  updatePassword };
