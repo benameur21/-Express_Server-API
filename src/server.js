@@ -18,6 +18,8 @@ app.use(express.json());
 app.use('/api/articles', articleRoutes);
 app.use('/api/users', userRoutes);
 
+console.log('User routes mounted');
+
 async function startServer() {
   try {
     await connectDB(process.env.MONGODB_URI);

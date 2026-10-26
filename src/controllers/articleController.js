@@ -1,5 +1,51 @@
 const Article = require('../models/articleModel');
 
+
+
+
+// GET /api/articles (Consultation publique)
+const getAllArticles = async (req, res) => {
+  try {
+    const articles = await Article.find()
+      .populate('author', 'name email role');
+
+    return res.status(200).json(articles);
+  } catch (err) {
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+// GET /api/articles/:id (Consultation par ID)
+const getArticleById = async (req, res) => {
+  try {
+    const article = await Article.findById(req.params.id)
+      .populate('author', 'name email role');
+
+    if (!article) {
+      return res.status(404).json({ message: 'Article non trouvé' });
+    }
+
+    return res.status(200).json(article);
+  } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({ message: 'Identifiant invalide' });
+    }
+
+    return res.status(500).json({ message: err.message });
+  }
+};
+
+
+
+
+
+
+
+
+
+
+
+
 // POST /api/articles (Création protégée)
 const createArticle = async (req, res) => {
   try {
@@ -91,4 +137,10 @@ const deleteArticle = async (req, res) => {
   }
 };
 
-module.exports = { createArticle, updateArticle, deleteArticle };
+module.exports = {
+  getAllArticles,
+  getArticleById,
+  createArticle,
+  updateArticle,
+  deleteArticle
+};
