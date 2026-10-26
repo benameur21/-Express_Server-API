@@ -1,116 +1,94 @@
 const Article = require('../models/articleModel');
-const User = require('../models/userModel');
 
-// 1. Retrieve all articles populated with author information
-const getAllArticles = async (req, res) => {
-  try {
-    const articles = await Article.find().populate('author', 'name email');
-    return res.status(200).json(articles);
-  } catch (err) {
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-// 2. Create a new article linked to an author
+// POST /api/articles (Création protégée)
 const createArticle = async (req, res) => {
   try {
-    const { title, content, authorId } = req.body;
+    const { title, content } = req.body;
 
-    if (!title || !content || !authorId) {
-      return res.status(400).json({
-        message: 'title, content, and authorId are required'
-      });
+    if (!title || !content) {
+      return res.status(400).json({ message: 'Titre et contenu obligatoires' });
     }
 
-    const author = await User.findById(authorId);
-    if (!author) {
-      return res.status(404).json({
-        message: 'Author not found (invalid authorId)'
-      });
-    }
-
+    // L'auteur est extrait du token vérifié : usurpation impossible !
     const newArticle = await Article.create({
       title,
       content,
-      author: authorId
+      author: req.user._id
     });
-    const populatedArticle = await newArticle.populate('author', 'name email');
-    return res.status(201).json(populatedArticle);
+
+    const populated = await newArticle.populate('author', 'name email role');
+    return res.status(201).json(populated);
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
 };
 
-// 3. Retrieve a single article by ID
-
-const getArticleById = async (req, res) => {
-  try {
-    const article = await Article.findById(req.params.id).populate(
-      'author',
-      'name email'
-    );
-
-    if (!article) {
-      return res.status(404).json({ message: 'Article not found' });
-    }
-
-    return res.status(200).json(article);
-  } catch (err) {
-    if (err.name === 'CastError') {
-      return res.status(400).json({
-        message: 'Identifiant de ressource invalide (format ObjectId attendu)'
-      });
-    }
-
-    return res.status(500).json({ message: err.message });
-  }
-};
-
-
-// 4. Update an existing article (PUT /api/articles/:id)
+// PUT /api/articles/:id (Modification protégée : auteur ou admin)
 const updateArticle = async (req, res) => {
   try {
-    const article = await Article.findByIdAndUpdate(
-      req.params.id,
-      req.body,
-      { new: true, runValidators: true }
-    );
+    const article = await Article.findById(req.params.id);
+
     if (!article) {
-      return res.status(404).json({
-        message: 'Article not found for update'
+      return res.status(404).json({ message: 'Article non trouvé' });
+    }
+
+    // Vérification des droits de propriété
+    if (
+      article.author.toString() !== req.user._id.toString() &&
+      req.user.role !== 'admin'
+    ) {
+      return res.status(403).json({
+        message: "Action interdite : vous n'êtes pas l'auteur de cet article"
       });
     }
 
-    const populated = await article.populate('author', 'name email');
+    article.title = req.body.title || article.title;
+    article.content = req.body.content || article.content;
+
+    const updated = await article.save();
+    const populated = await updated.populate('author', 'name email role');
+
     return res.status(200).json(populated);
   } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({ message: 'Identifiant invalide' });
+    }
+
     return res.status(500).json({ message: err.message });
   }
 };
 
-// 5. Delete an article (DELETE /api/articles/:id)
+// DELETE /api/articles/:id (Suppression protégée : auteur ou admin)
 const deleteArticle = async (req, res) => {
   try {
-    const article = await Article.findByIdAndDelete(req.params.id);
+    const article = await Article.findById(req.params.id);
+
     if (!article) {
-      return res.status(404).json({
-        message: 'Article not found for deletion'
+      return res.status(404).json({ message: 'Article non trouvé' });
+    }
+
+    if (
+      article.author.toString() !== req.user._id.toString() &&
+      req.user.role !== 'admin'
+    ) {
+      return res.status(403).json({
+        message: "Action interdite : vous n'êtes pas l'auteur de cet article"
       });
     }
 
+    await Article.findByIdAndDelete(req.params.id);
+
     return res.status(200).json({
-      message: 'Article deleted successfully',
+      message: 'Article supprimé avec succès',
       id: req.params.id
     });
   } catch (err) {
+    if (err.name === 'CastError') {
+      return res.status(400).json({ message: 'Identifiant invalide' });
+    }
+
     return res.status(500).json({ message: err.message });
   }
 };
 
-module.exports = {
-  getAllArticles,
-  createArticle,
-  getArticleById,
-  updateArticle,
-  deleteArticle
-};
+module.exports = { createArticle, updateArticle, deleteArticle };
