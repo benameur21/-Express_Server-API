@@ -4,39 +4,33 @@ const userSchema = new mongoose.Schema(
   {
     name: {
       type: String,
-      required: [true, 'Name is required'],
+      required: [true, 'Le nom est obligatoire'],
       trim: true
     },
     email: {
       type: String,
-      required: [true, 'Email is required'],
+      required: [true, "L'email est obligatoire"],
       unique: true,
       lowercase: true,
       trim: true,
-      match: [
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-        'Invalid email format (e.g., aya@polytechnique.tn)'
-      ]
+      match: [/^[^\s@]+@[^\s@]+\.[^\s@]+$/, 'Format d\'email invalide']
     },
-    age: {
-      type: Number,
-      min: [4, 'Minimum age is 4 years old']
+    password: {
+      type: String,
+      required: [true, 'Le mot de passe est obligatoire'],
+      minlength: [6, 'Le mot de passe doit comporter au moins 6 caracteres']
     },
     role: {
       type: String,
       enum: {
         values: ['user', 'admin'],
-        message: '{VALUE} is not an authorized role'
+        message: '{VALUE} n\'est pas un role autorise'
       },
       default: 'user'
     },
-    bio: {
-      type: String,
-      maxlength: [200, 'La biographie ne peut pas dépasser 200 caractères']
-    },
-    phone: {
-      type: String,
-      match: [/^\d{8}$/, 'Numéro de 8 chiffres requis']
+    age: {
+      type: Number,
+      min: [4, "L'age minimum autorise est de 4 ans"]
     }
   },
   { timestamps: true }
